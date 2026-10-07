@@ -107,6 +107,14 @@ The skill is a small bundle: `SKILL.md`, the files in `references/` that are loa
 - Codex version by AllstarGER: [https://github.com/AllstarGER/one-skill-to-rule-them-all](https://github.com/AllstarGER/one-skill-to-rule-them-all) (based on an older version of task-observer)
 - Please get in touch if you've open-sourced an adaptation of the meta-skill for another system or environment. I'm happy to include it here.
 
+**Verified on live installs (install + activation instructions in `references/environments.md`):**
+- Codex CLI 0.161+ — skill roots auto-discovery (`~/.codex/skills/` plus a shared `~/.agents/skills/` hub), `AGENTS.md` activation, `SessionStart` hook support
+- Kimi Code 2.1+ — native discovery of `~/.kimi-code/skills/` and `~/.agents/skills/`, `AGENTS.md` activation, `[[hooks]]` session-start support
+- GitHub Copilot Chat / Copilot CLI — skills via `~/.copilot/skills/` or `chat.agentSkillsLocations`, `copilot-instructions.md` activation, `sessionStart` hooks
+- Agy / Antigravity CLI — global `~/.gemini/config/skills/` discovery, `AGENTS.md` / `GEMINI.md` activation (no session-start hook event; activation file is the always-on tier)
+
+On these CLIs the recommended layout is one shared skills hub (e.g. `~/.agents/skills/`) registered with every CLI, with the task-observer folder symlinked into it — install once, visible everywhere.
+
 **Potentially compatible with caveats:**
 - Other skills-compatible platforms (ChatGPT, Gemini CLI, Cursor, etc.) — the skill uses Claude-centric concepts like `<available_skills>` and skill-creator references that other systems would need to interpret or adapt. The SKILL.md format is cross-platform, but the content assumes Claude's architecture.
 - Users have reported successful integrations into Openclaw and Hermes setups.

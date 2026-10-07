@@ -14,6 +14,14 @@ The skill is a multi-file bundle: `SKILL.md`, a `references/` folder that is loa
 
 Once you've uploaded the skill, it's available in all chats (web interface, mobile app, desktop app) and also in the Cowork and Code tabs of the desktop app. Its full potential can be exploited in Cowork tasks and Code sessions.
 
+## Installing on standalone agent CLIs
+
+Outside the Claude apps, the same bundle installs as plain files — no zip or upload step:
+
+1. Put the `task-observer/` folder (SKILL.md, `references/`, `scripts/`) where your CLI discovers skills. The recommended layout is one shared hub directory — `~/.agents/skills/` — registered with every CLI on the machine, with `task-observer` symlinked into it; then any improvement lands once and is visible to all of them. Per-CLI discovery details (skill roots, config keys, version caveats) live in the Environment mappings table in `references/environments.md`.
+2. Add the activation block from `references/environments.md` (Recommended activation setup) to your CLI's instruction file — `AGENTS.md` for Codex CLI, Kimi Code and Agy/Antigravity; `copilot-instructions.md` for GitHub Copilot. Installing without this step leaves the skill invisible until something happens to match its description, which is most of the time.
+3. Verify in a *new* session that the Session Start Protocol ran (the `skill-observations/` probe exists and one observation file was written). The session you installed in cannot prove this.
+
 ## Using the skill in chats
 
 You can use the meta-skill in regular chats, and I sometimes do: for example, when I start a conversation on my phone or via the web interface. The meta-skill will log observations during the conversation, but unlike in a Cowork session, it won't be able to write them to a shared storage.

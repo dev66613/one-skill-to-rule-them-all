@@ -1304,6 +1304,30 @@ directory. Where the entry is a symlink, resolve it before staging as
 well (`skill-authoring.md`, editing rule 1): a link copied as a link
 makes the staged path the live one.
 
+**Standalone agent CLIs (Codex CLI, Kimi Code, GitHub Copilot, Agy / Antigravity).**
+Outside the Claude family the same four capabilities map onto different
+file names. All four were verified on live installs, not just vendor docs;
+versions in parentheses are the verified ones. The shared-skills-hub
+pattern recurs: one directory of skills (here `~/.agents/skills/`) is
+registered with every CLI on the machine, so a skill installed once is
+visible to all of them, and each CLI additionally auto-discovers its own
+per-brand skills directory.
+
+| Capability | Codex CLI (0.161+) | Kimi Code (2.1+) | GitHub Copilot Chat / CLI | Agy / Antigravity CLI |
+|---|---|---|---|---|
+| Persistent workspace | any fixed absolute path; the shared `~/.agents/skills/` hub is auto-registered as a skill root alongside `~/.codex/skills/` | any fixed absolute path; user roots are `~/.kimi-code/skills/` plus `~/.agents/skills/` natively | workspace folder or `~/.copilot/`; VS Code setting `chat.agentSkillsLocations` opts directories in (e.g. `"~/.agents/skills": true`) | global root `~/.gemini/config/`; workspace `.agents/` is discovered upward to the repo root |
+| Live skill files | `~/.codex/skills/{skill}/` (plain directories or symlinks into the hub); optional explicit `[[skills.config]]` entries in `config.toml` (global file only — project-local skill config is ignored) | `~/.kimi-code/skills/{skill}/` and `~/.agents/skills/{skill}/`; `merge_all_available_skills` / `extra_skill_dirs` tune discovery | `~/.copilot/skills/{skill}/` (mixed layout: local dirs plus symlinks into the hub); skill frontmatter adds `keywords` | `~/.gemini/config/skills/{skill}/` (symlinks into the hub work); progressive disclosure — only `name`/`description` load until the skill is invoked |
+| Activation instruction file | `AGENTS.md` (found from the project root downward; the nearest file wins) — not `CLAUDE.md` | `AGENTS.md` — user-global at `~/.kimi-code/AGENTS.md`, project root, or `<project>/.kimi-code/AGENTS.md` | `copilot-instructions.md` auto-loaded; scoped `~/.copilot/instructions/*.instructions.md` with `applyTo: "**"` in frontmatter | `AGENTS.md` / `GEMINI.md`, hierarchical; global at `~/.gemini/config/AGENTS.md`. Rules budget: ~24 KB per file |
+| Session-start trigger | `SessionStart` hook in `~/.codex/hooks.json` gated on `[features] hooks = true` in `config.toml` | `[[hooks]]` with `event = "SessionStart"` in `~/.kimi-code/config.toml` | `sessionStart` hook in `~/.copilot/settings.json` (`{type, bash, timeoutSec}`), or `chat.hookFilesLocations` in VS Code settings | no session-start event; nearest is `PreInvocation` in `~/.gemini/config/hooks.json` — keep the activation line in `AGENTS.md` as the only always-on tier |
+| MCP config | `[mcp_servers.<name>]` in `~/.codex/config.toml` | `~/.kimi-code/mcp.json` (`mcpServers.<name>`, stdio or HTTP) | `~/.copilot/mcp-config.json` | `~/.gemini/config/mcp_config.json` (stdio or Streamable HTTP; legacy SSE unsupported) |
+| Scheduled review | cron / OS scheduler invoking `codex exec` headless | cron invoking `kimi` headless | OS scheduler / VS Code task invoking the Copilot CLI headless | cron invoking `agy` headless |
+
+On all four, install = make the skill directory visible (directory copy or
+symlink into the hub), then add the activation block from this file to the
+activation instruction file named above. Verify in a NEW session, same as
+every other environment: run one task, then confirm the
+`skill-observations/` probe fired and one observation file exists.
+
 ## Git as an optional staging medium
 
 Staging a skill update as a branch or commit the user merges gives the
